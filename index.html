@@ -243,13 +243,15 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
-        if (isMobile) {
-            window.addEventListener('deviceorientation', (event) => {
-                deviceOrientationData.alpha = event.alpha || 0; // rotation around z-axis (in degrees)
-                deviceOrientationData.beta = event.beta || 0;   // rotation around x-axis (in degrees)
-                deviceOrientationData.gamma = event.gamma || 0; // rotation around y-axis (in degrees)
-            });
-        }
+        document.addEventListener('click', () => {
+            if (isMobile) {
+                window.addEventListener('deviceorientation', (event) => {
+                    deviceOrientationData.alpha = event.alpha || 0;
+                    deviceOrientationData.beta = event.beta || 0;
+                    deviceOrientationData.gamma = event.gamma || 0;
+                });
+            }
+        });
 
         // Handle mouse movements
         document.addEventListener('mousemove', (event) => {
