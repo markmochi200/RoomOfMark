@@ -172,6 +172,7 @@
         let audio = new Audio('roomofmark.m4a');  // Replace with the actual audio path
         let isMobile = window.matchMedia("(max-width: 768px)").matches || ('ontouchstart' in window); // Detect mobile devices
         let deviceOrientationData = { alpha: 0, beta: 0, gamma: 0 }; // Store gyroscope data
+        let permissionRequested = false;
 
         // Set up the scene and background
         function setupSceneOne() {
@@ -459,29 +460,26 @@
                 }
             }
         }
-
-        // Check if we're on iOS and the device supports motion events
-        if (isMobile && typeof DeviceOrientationEvent.requestPermission === 'function') {
-            // When the user interacts with the page (e.g., clicking a button or any action)
-            document.addEventListener('touchstart', async () => {
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (isMobile && typeof DeviceOrientationEvent.requestPermission === 'function' && !permissionRequested) {
                 try {
-                    // Request permission for DeviceOrientation events (iOS 13+)
                     const permission = await DeviceOrientationEvent.requestPermission();
-
                     if (permission === 'granted') {
                         console.log('Permission granted for Device Orientation');
-                        // Now start listening to the device orientation events
                         window.addEventListener('deviceorientation', handleDeviceOrientation);
                     } else {
                         console.log('Permission denied for Device Orientation');
                         alert('You need to grant permission for device orientation to work.');
                     }
+                    permissionRequested = true;
                 } catch (err) {
                     console.error('Permission request failed', err);
-                    alert('Failed to request permission for device orientation.', err);
+                    alert('Failed to request permission for device orientation. Error: ' + (err.message || err));
                 }
-            });
-        }
+            }
+        });
+
 
         // The actual device orientation handler
         function handleDeviceOrientation(event) {
@@ -503,9 +501,9 @@
 
             // Apply gyroscope data to camera rotation
             if (isMobile) {
-                camera.rotation.x = THREE.MathUtils.degToRad(deviceOrientationData.beta * 0.5);  // Adjust sensitivity here
-                camera.rotation.y = THREE.MathUtils.degToRad(deviceOrientationData.gamma * 0.5);
-                camera.rotation.z = THREE.MathUtils.degToRad(deviceOrientationData.alpha * 0.5);
+                camera.rotation.x = THREE.MathUtils.degToRad(deviceOrientationData.beta * 0.02);  // Adjust sensitivity here
+                camera.rotation.y = THREE.MathUtils.degToRad(deviceOrientationData.gamma * 0.02);
+                camera.rotation.z = THREE.MathUtils.degToRad(deviceOrientationData.alpha * 0.02);
             }
 
             camera.position.x += (mouseX * 5 - camera.position.x) * 0.05;
