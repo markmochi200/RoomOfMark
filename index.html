@@ -492,6 +492,19 @@
                         alert('Failed to request permission for device orientation. Error: ' + (err.message || err));
                     }
                 }
+
+                if (isMobile && !permissionRequested) {
+                    try {
+                        window.addEventListener('deviceorientation', handleDeviceOrientation);
+                        permissionRequested = true;
+                    } catch (err) {
+                        // 捕获错误并输出到控制台
+                        console.error('Permission request failed', err);
+
+                        // 提示用户发生了什么错误
+                        alert('Failed to request permission for device orientation. Error: ' + (err.message || err));
+                    }
+                }
             });
         });
 
