@@ -513,14 +513,10 @@
             if (particlesMesh) {
                 particlesMesh.rotation.y += 0.002;
             }
-
-            // Apply gyroscope data to camera rotation
             if (isMobile) {
-                camera.position.x = THREE.MathUtils.degToRad(deviceOrientationData.beta * 2);  // Adjust sensitivity here
-                camera.position.y = THREE.MathUtils.degToRad(deviceOrientationData.gamma * 2);
-                camera.position.z = THREE.MathUtils.degToRad(deviceOrientationData.alpha * 0.2);
+                mouseX = (event.gamma / 90) * 2 - 1;  // gamma ranges from -90 to 90, map to -1 to 1
+                mouseY = -(event.beta / 90) * 2 + 1;  // beta ranges from -90 to 90, map to 1 to -1
             }
-
             camera.position.x += (mouseX * 5 - camera.position.x) * 0.05;
             camera.position.y += (mouseY * 5 - camera.position.y) * 0.05;
             camera.lookAt(scene.position);
