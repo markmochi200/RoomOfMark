@@ -24,6 +24,8 @@
             max-height: 200px;
             overflow-y: auto;
             margin-bottom: 10px;
+            white-space: pre-wrap; /* Ensure line breaks and spaces are preserved */
+            word-wrap: break-word; /* Break words if they're too long */
         }
         .chatMessage {
             margin: 5px 0;
@@ -76,6 +78,8 @@
         let isSceneOne = true;
         let lastCameraZ = 5;
         let audio = new Audio('roomofmark.m4a');  // Replace with the actual audio path
+        let isMobile = window.matchMedia("(max-width: 768px)").matches; // Detect mobile devices
+        let deviceOrientationData = { alpha: 0, beta: 0, gamma: 0 }; // Store gyroscope data
 
         // Set up the scene and background
         function setupSceneOne() {
@@ -239,6 +243,14 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
+        if (isMobile) {
+            window.addEventListener('deviceorientation', (event) => {
+                deviceOrientationData.alpha = event.alpha || 0; // rotation around z-axis (in degrees)
+                deviceOrientationData.beta = event.beta || 0;   // rotation around x-axis (in degrees)
+                deviceOrientationData.gamma = event.gamma || 0; // rotation around y-axis (in degrees)
+            });
+        }
+
         // Handle mouse movements
         document.addEventListener('mousemove', (event) => {
             mouseX = (event.clientX / window.innerWidth) * 2 - 1;
@@ -320,7 +332,7 @@
                 // Display user message
                 const messageElement = document.createElement('div');
                 messageElement.classList.add('chatMessage', 'userMessage');
-                messageElement.textContent = userMessage;
+                messageElement.textContent = userMessage; // Preserve text formatting
                 chatLog.appendChild(messageElement);
                 input.value = ''; // Clear input field
 
@@ -341,7 +353,7 @@
                         // Display the bot's response
                         const botResponse = document.createElement('div');
                         botResponse.classList.add('chatMessage', 'botMessage');
-                        botResponse.textContent = 'Mark: ' + data.reply;
+                        botResponse.innerHTML = 'Mark: ' + data.reply.replace(/\n/g, '<br/>'); // Replace newlines with <br>
                         chatLog.appendChild(botResponse);
 
                         // Add bot response to the conversation history
@@ -351,20 +363,18 @@
                     } else {
                         const botResponse = document.createElement('div');
                         botResponse.classList.add('chatMessage', 'botMessage');
-                        botResponse.textContent = 'Sorry, I could not get a response right now.';
+                        botResponse.textContent = 'Mark needs a moment to chill out! Too many requests all around the world are acoming through right now! Please try again later';
                         chatLog.appendChild(botResponse);
                     }
                 } catch (error) {
                     console.error(error);
                     const botResponse = document.createElement('div');
                     botResponse.classList.add('chatMessage', 'botMessage');
-                    botResponse.textContent = `Error: Unable to fetch response due to: ${error}`;
+                    botResponse.textContent = `Mark needs a moment to chill out! Too many requests all around the world are coming through right now! Please try again later`;
                     chatLog.appendChild(botResponse);
                 }
             }
         }
-
-
 
         // Animation loop
         function animate() {
