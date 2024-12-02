@@ -101,7 +101,7 @@
         .chatMessage { margin: 5px 0; }
         .userMessage { color: #ffffff; font-size: 18px; }
         .botMessage { color: #00f2ff; font-size: 18px; }
-        #chatInput { width: 94.5%; padding: 10px; font-size: 18px; background: #333; color: white; border: none; border-radius: 5px; }
+        #chatInput { resize: none; /* Disable resizing */ width: 94.5%; padding: 10px; font-size: 18px; background: #333; color: white; border: none; border-radius: 5px; }
 
         /* Media Queries for smaller devices */
         @media (max-width: 768px) { 
@@ -143,7 +143,7 @@
     <!-- Chat Interface -->
     <div id="chatBox">
         <div id="chatLog"></div>
-        <input type="text" id="chatInput" placeholder="Ask me anything..." />
+        <textarea id="chatInput" placeholder="Ask me anything..."></textarea>
         <div id="buttonContainer">
             <button id="sendButton">Send</button>
             <button id="zoomButton" class="clickable">Full Screen</button>
@@ -397,16 +397,19 @@
             isSceneOne = !isSceneOne;
         }
 
-        // Trigger message send on Enter key
-        document.getElementById('chatInput').addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                sendMessage();
-            }
-        });
-
         // Simple chatbox interaction
         document.getElementById('sendButton').addEventListener('click', sendMessage);
         let conversationHistory = []; // Array to store chat history
+
+        // Allow Shift + Enter to insert newlines in input
+        document.getElementById('chatInput').addEventListener('keydown', function(event) {
+            const input = document.getElementById('chatInput');
+            // If only Enter is pressed, send the message
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault(); // Prevent the default Enter behavior (which is to add a newline)
+                sendMessage();
+            }
+        });
 
         async function sendMessage() {
             const input = document.getElementById('chatInput');
@@ -417,12 +420,13 @@
                 // Display user message
                 const messageElement = document.createElement('div');
                 messageElement.classList.add('chatMessage', 'userMessage');
-                messageElement.textContent = userMessage; // Preserve text formatting
+                messageElement.innerHTML = 'You: ' + userMessage.replace(/\n/g, '<br/>'); // Preserve text formatting
                 chatLog.appendChild(messageElement);
                 input.value = ''; // Clear input field
 
                 // Add user message to the conversation history
                 conversationHistory.push({ role: 'user', content: userMessage });
+                chatLog.scrollTop = chatLog.scrollHeight; // Scroll to the bottom
 
                 // Send the chat history to the backend API
                 try {
@@ -448,15 +452,25 @@
                     } else {
                         const botResponse = document.createElement('div');
                         botResponse.classList.add('chatMessage', 'botMessage');
-                        botResponse.textContent = 'Mark needs a moment to chill out! Too many requests all around the world are acoming through right now! Please try again later';
+                        botResponse.textContent = 'Mark: I need a moment to chill out! Too many requests all around the world are acoming through right now! Please try again later...';
                         chatLog.appendChild(botResponse);
+
+                        // Add bot response to the conversation history
+                        conversationHistory.push({ role: 'assistant', content: 'Mark: I need a moment to chill out! Too many requests all around the world are acoming through right now! Please try again later...' });
+
+                        chatLog.scrollTop = chatLog.scrollHeight; // Scroll to the bottom
                     }
                 } catch (error) {
                     console.error(error);
                     const botResponse = document.createElement('div');
                     botResponse.classList.add('chatMessage', 'botMessage');
-                    botResponse.textContent = `Mark needs a moment to chill out! Too many requests all around the world are coming through right now! Please try again later`;
+                    botResponse.textContent = `Mark: I need a moment to chill out! Too many requests all around the world are coming through right now! Please try again later`;
                     chatLog.appendChild(botResponse);
+
+                    // Add bot response to the conversation history
+                    conversationHistory.push({ role: 'assistant', content: 'Mark: I need a moment to chill out! Too many requests all around the world are acoming through right now! Please try again later...' });
+
+                    chatLog.scrollTop = chatLog.scrollHeight; // Scroll to the bottom
                 }
             }
         }
