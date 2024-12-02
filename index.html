@@ -474,11 +474,12 @@
 
                         if (permission === 'granted') {
                             console.log('Permission granted for Device Orientation');
+                            alert('You can start rotating your phone now')
                             // 权限成功后开始监听 deviceorientation
                             window.addEventListener('deviceorientation', handleDeviceOrientation);
                         } else {
                             console.log('Permission denied for Device Orientation');
-                            alert('You need to grant permission for device orientation to work.');
+                            alert('You need to grant permission for device orientation to work');
                         }
 
                         // 设置标志，表示权限请求已完成
@@ -515,9 +516,9 @@
 
             // Apply gyroscope data to camera rotation
             if (isMobile) {
-                camera.rotation.x = THREE.MathUtils.degToRad(deviceOrientationData.beta * 0.02);  // Adjust sensitivity here
-                camera.rotation.y = THREE.MathUtils.degToRad(deviceOrientationData.gamma * 0.02);
-                camera.rotation.z = THREE.MathUtils.degToRad(deviceOrientationData.alpha * 0.02);
+                camera.rotation.x = THREE.MathUtils.degToRad(deviceOrientationData.beta * 2);  // Adjust sensitivity here
+                camera.rotation.y = THREE.MathUtils.degToRad(deviceOrientationData.gamma * 2);
+                camera.rotation.z = THREE.MathUtils.degToRad(deviceOrientationData.alpha * 2);
             }
 
             camera.position.x += (mouseX * 5 - camera.position.x) * 0.05;
