@@ -101,7 +101,16 @@
         .chatMessage { margin: 5px 0; }
         .userMessage { color: #ffffff; font-size: 18px; }
         .botMessage { color: #00f2ff; font-size: 18px; }
-        #chatInput { resize: none; /* Disable resizing */ width: 94.5%; padding: 10px; font-size: 18px; background: #333; color: white; border: none; border-radius: 5px; }
+        #chatInput { 
+            resize: none; /* Disable resizing */ 
+            width: 94.5%; 
+            padding: 10px; 
+            font-size: 18px; 
+            background: #333; 
+            color: white; 
+            border: none; 
+            border-radius: 5px;
+        }
 
         /* Media Queries for smaller devices */
         @media (max-width: 768px) { 
@@ -112,7 +121,6 @@
 
             #chatBox.fullScreen #chatInput {
                 width: 90%;  /* Limit width on smaller screens to avoid overflow */
-                font-size: 16px;  /* Adjust font size */
             }
             
             #chatLog { 
@@ -128,7 +136,6 @@
 
             #chatBox.fullScreen #chatInput {
                 width: 90%;  /* Even smaller width for mobile screens */
-                font-size: 14px;  /* Adjust font size further */
             }
 
             #chatLog { 
@@ -464,7 +471,7 @@
                     console.error(error);
                     const botResponse = document.createElement('div');
                     botResponse.classList.add('chatMessage', 'botMessage');
-                    botResponse.textContent = `Mark: I need a moment to chill out! Too many requests all around the world are coming through right now! Please try again later`;
+                    botResponse.textContent = `Mark: I need a moment to chill out! Too many requests all around the world are coming through right now! Please try again later...`;
                     chatLog.appendChild(botResponse);
 
                     // Add bot response to the conversation history
