@@ -99,16 +99,35 @@
 
         /* Media Queries for smaller devices */
         @media (max-width: 768px) { 
-            #chatBox { width: 100%; padding: 15px; } 
-            #chatInput { width: 94.5%; }
-            #chatInput, #sendButton, #zoomButton { font-size: 16px; }
-            #chatLog { max-height: 150px; } 
+            #chatBox { 
+                width: 100%; 
+                padding: 15px; 
+            }
+
+            #chatBox.fullScreen #chatInput {
+                width: 94.5%;  /* Limit width on smaller screens to avoid overflow */
+                font-size: 16px;  /* Adjust font size */
+            }
+            
+            #chatLog { 
+                max-height: 150px; 
+            } 
         }
+
         @media (max-width: 480px) { 
-            #chatBox { width: 100%; padding: 10px; } 
-            #chatInput { width: 94.5%; }
-            #chatInput, #sendButton, #zoomButton { font-size: 14px; }
-            #chatLog { max-height: 120px; } 
+            #chatBox { 
+                width: 100%; 
+                padding: 10px; 
+            }
+
+            #chatBox.fullScreen #chatInput {
+                width: 94.5%;  /* Even smaller width for mobile screens */
+                font-size: 14px;  /* Adjust font size further */
+            }
+
+            #chatLog { 
+                max-height: 120px; 
+            }
         }
     </style>
 </head>
