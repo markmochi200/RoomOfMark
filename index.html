@@ -12,13 +12,16 @@
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            width: 400px;
+            width: 400px; /* Default width for larger screens */
+            max-width: 90%; /* Ensure it doesn't get too large on mobile */
             background: rgba(0, 0, 0, 0.8);
             padding: 20px;
             border-radius: 10px;
             color: white;
             font-family: Arial;
-            z-index: 1; /* Ensure chat box stays on top */
+            z-index: 1;
+            /* Adding a bit of responsiveness */
+            box-sizing: border-box;
         }
         #chatLog {
             max-height: 200px;
@@ -61,6 +64,37 @@
         }
         .clickable {
             cursor: pointer;
+        }
+
+        /* Media Queries for smaller devices */
+        @media (max-width: 768px) {
+            #chatBox {
+                width: 90%; /* Make the chat box smaller on smaller screens */
+                padding: 15px;
+            }
+
+            #chatInput, #sendButton {
+                font-size: 14px; /* Adjust font size for better fit */
+            }
+
+            #chatLog {
+                max-height: 150px; /* Adjust max height for chat log */
+            }
+        }
+
+        @media (max-width: 480px) {
+            #chatBox {
+                width: 100%; /* Full width on very small screens */
+                padding: 10px;
+            }
+
+            #chatInput, #sendButton {
+                font-size: 12px; /* Further reduce font size */
+            }
+
+            #chatLog {
+                max-height: 120px; /* Adjust max height for smaller screens */
+            }
         }
     </style>
 </head>
@@ -387,6 +421,13 @@
             }
             if (particlesMesh) {
                 particlesMesh.rotation.y += 0.002;
+            }
+
+            // Apply gyroscope data to camera rotation
+            if (isMobile) {
+                camera.rotation.x = THREE.MathUtils.degToRad(deviceOrientationData.beta * 0.5);  // Adjust sensitivity here
+                camera.rotation.y = THREE.MathUtils.degToRad(deviceOrientationData.gamma * 0.5);
+                camera.rotation.z = THREE.MathUtils.degToRad(deviceOrientationData.alpha * 0.5);
             }
 
             camera.position.x += (mouseX * 5 - camera.position.x) * 0.05;
