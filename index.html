@@ -40,7 +40,7 @@
             color: #00f2ff;
         }
         #chatInput {
-            width: 95%;
+            width: 94.5%;
             padding: 10px;
             font-size: 16px;
             background: #333;
@@ -277,15 +277,13 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
-        document.addEventListener('click', () => {
-            if (isMobile) {
-                window.addEventListener('deviceorientation', (event) => {
-                    deviceOrientationData.alpha = event.alpha || 0;
-                    deviceOrientationData.beta = event.beta || 0;
-                    deviceOrientationData.gamma = event.gamma || 0;
-                });
-            }
-        });
+        if (isMobile) {
+            window.addEventListener('deviceorientation', (event) => {
+                deviceOrientationData.alpha = event.alpha || 0;
+                deviceOrientationData.beta = event.beta || 0;
+                deviceOrientationData.gamma = event.gamma || 0;
+            });
+        };
 
         // Handle mouse movements
         document.addEventListener('mousemove', (event) => {
@@ -425,9 +423,9 @@
 
             // Apply gyroscope data to camera rotation
             if (isMobile) {
-                camera.rotation.x = THREE.MathUtils.degToRad(deviceOrientationData.beta * 0.5);  // Adjust sensitivity here
-                camera.rotation.y = THREE.MathUtils.degToRad(deviceOrientationData.gamma * 0.5);
-                camera.rotation.z = THREE.MathUtils.degToRad(deviceOrientationData.alpha * 0.5);
+                camera.rotation.x = THREE.MathUtils.degToRad(deviceOrientationData.beta * 5);  // Adjust sensitivity here
+                camera.rotation.y = THREE.MathUtils.degToRad(deviceOrientationData.gamma * 5);
+                camera.rotation.z = THREE.MathUtils.degToRad(deviceOrientationData.alpha * 5);
             }
 
             camera.position.x += (mouseX * 5 - camera.position.x) * 0.05;
