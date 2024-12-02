@@ -170,7 +170,7 @@
         let isSceneOne = true;
         let lastCameraZ = 5;
         let audio = new Audio('roomofmark.m4a');  // Replace with the actual audio path
-        let isMobile = window.matchMedia("(max-width: 768px)").matches; // Detect mobile devices
+        let isMobile = window.matchMedia("(max-width: 768px)").matches || ('ontouchstart' in window); // Detect mobile devices
         let deviceOrientationData = { alpha: 0, beta: 0, gamma: 0 }; // Store gyroscope data
 
         // Set up the scene and background
@@ -335,24 +335,6 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
-        if (isMobile) {
-            document.getElementById('askPermissionButton').addEventListener('click', function() {
-                // This action prompts permission for device motion (iOS).
-                if (window.DeviceOrientationEvent) {
-                    window.addEventListener('deviceorientation', function(event) {
-                        // After this event is triggered, the browser should grant permission
-                        console.log("Device orientation data is available.");
-                    });
-                }
-            });
-
-            window.addEventListener('deviceorientation', (event) => {
-                deviceOrientationData.alpha = event.alpha || 0;
-                deviceOrientationData.beta = event.beta || 0;
-                deviceOrientationData.gamma = event.gamma || 0;
-            });
-        };
-
         // Handle mouse movements
         document.addEventListener('mousemove', (event) => {
             mouseX = (event.clientX / window.innerWidth) * 2 - 1;
@@ -478,6 +460,36 @@
             }
         }
 
+        // Check if we're on iOS and the device supports motion events
+        if (isMobile && typeof DeviceOrientationEvent.requestPermission === 'function') {
+            // When the user interacts with the page (e.g., clicking a button or any action)
+            zoomButton.addEventListener('click', async () => {
+                try {
+                    // Request permission for DeviceOrientation events (iOS 13+)
+                    const permission = await DeviceOrientationEvent.requestPermission();
+
+                    if (permission === 'granted') {
+                        console.log('Permission granted for Device Orientation');
+                        // Now start listening to the device orientation events
+                        window.addEventListener('deviceorientation', handleDeviceOrientation);
+                    } else {
+                        console.log('Permission denied for Device Orientation');
+                        alert('You need to grant permission for device orientation to work.');
+                    }
+                } catch (err) {
+                    console.error('Permission request failed', err);
+                    alert('Failed to request permission for device orientation.');
+                }
+            });
+        }
+
+        // The actual device orientation handler
+        function handleDeviceOrientation(event) {
+            deviceOrientationData.alpha = event.alpha || 0;  // Rotation around Z-axis
+            deviceOrientationData.beta = event.beta || 0;    // Rotation around X-axis
+            deviceOrientationData.gamma = event.gamma || 0;  // Rotation around Y-axis
+        }
+
         // Animation loop
         function animate() {
             requestAnimationFrame(animate);
@@ -490,10 +502,10 @@
             }
 
             // Apply gyroscope data to camera rotation
-            if (isMobile && deviceOrientationData) {
-                camera.rotation.x = THREE.MathUtils.degToRad(deviceOrientationData.beta * 2);  // Adjust sensitivity here
-                camera.rotation.y = THREE.MathUtils.degToRad(deviceOrientationData.gamma * 2);
-                camera.rotation.z = THREE.MathUtils.degToRad(deviceOrientationData.alpha * 2);
+            if (isMobile) {
+                camera.rotation.x = THREE.MathUtils.degToRad(deviceOrientationData.beta * 0.5);  // Adjust sensitivity here
+                camera.rotation.y = THREE.MathUtils.degToRad(deviceOrientationData.gamma * 0.5);
+                camera.rotation.z = THREE.MathUtils.degToRad(deviceOrientationData.alpha * 0.5);
             }
 
             camera.position.x += (mouseX * 5 - camera.position.x) * 0.05;
