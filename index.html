@@ -463,7 +463,7 @@
         // Check if we're on iOS and the device supports motion events
         if (isMobile && typeof DeviceOrientationEvent.requestPermission === 'function') {
             // When the user interacts with the page (e.g., clicking a button or any action)
-            zoomButton.addEventListener('click', async () => {
+            document.addEventListener('touchstart', async () => {
                 try {
                     // Request permission for DeviceOrientation events (iOS 13+)
                     const permission = await DeviceOrientationEvent.requestPermission();
