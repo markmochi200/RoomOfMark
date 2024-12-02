@@ -516,7 +516,7 @@
 
             // Apply gyroscope data to camera rotation
             if (isMobile) {
-                camera.position.y = THREE.MathUtils.degToRad(deviceOrientationData.beta * 1);  // Adjust sensitivity here
+                camera.position.y = -THREE.MathUtils.degToRad(deviceOrientationData.beta * 1);  // Adjust sensitivity here
                 camera.position.x = THREE.MathUtils.degToRad(deviceOrientationData.gamma * 1);
                 
             }
