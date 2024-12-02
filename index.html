@@ -5,8 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Room of Mark</title>
     <style>
+        /* Basic styles */
         body { margin: 0; font-family: Arial, sans-serif; overflow: hidden; }
         canvas { display: block; }
+
+        /* Chat Box Styling */
         #chatBox {
             position: absolute;
             bottom: 20px;
@@ -20,94 +23,122 @@
             color: white;
             font-family: Arial;
             z-index: 1;
-            /* Adding a bit of responsiveness */
             box-sizing: border-box;
         }
-        #chatLog {
-            max-height: 200px;
-            overflow-y: auto;
-            margin-bottom: 10px;
-            white-space: pre-wrap; /* Ensure line breaks and spaces are preserved */
-            word-wrap: break-word; /* Break words if they're too long */
+
+        /* Full screen chat box */
+        #chatBox.fullScreen {
+            top: 20pt;
+            bottom: 10%;
+            position: fixed;   /* Fixed positioning to cover the entire screen */
+            width: 100vw;        /* Full width of the screen */
+            height: 93.5%;       /* Full height of the screen */
+            padding: 30px;      /* Padding inside the chat box */
+            box-sizing: border-box;  /* Include padding in width/height calculation */
+            display: flex;      /* Use flex to align items */
+            flex-direction: column;  /* Arrange content in a column */
+            background: rgba(0, 0, 0, 0.8);  /* Keep dark background */
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end; /* Push everything to the bottom */
         }
-        .chatMessage {
-            margin: 5px 0;
+
+        /* Adjust input field size when in full-screen mode */
+        #chatBox.fullScreen #chatInput {
+            width: 97.25%;        /* Take full width of the screen */
+            padding: 15px;      /* Increase padding for better usability */
+            font-size: 18px;    /* Increase font size for readability */
+            margin-top: 20px;   /* Add margin for spacing */
         }
-        .userMessage {
-            color: #ffffff;
-        }
-        .botMessage {
-            color: #00f2ff;
-        }
-        #chatInput {
-            width: 94.5%;
-            padding: 10px;
-            font-size: 16px;
-            background: #333;
-            color: white;
-            border: none;
-            border-radius: 5px;
-        }
-        #sendButton {
-            width: 100%;
-            padding: 10px;
-            background-color: #14d4d7;
-            color: rgb(255, 255, 255);
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
+
+        /* Container for Send and Zoom buttons */
+        #buttonContainer {
+            display: flex;
+            justify-content: space-between;
             margin-top: 10px;
+        }
+
+        /* Make buttons smaller and fit in one line */
+        #sendButton, #zoomButton {
+            width: 48%; /* Make buttons take up less width so they fit on the same line */
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
         }
+
+        #sendButton {
+            background-color: #14d4d7;
+            color: white;
+        }
+
         #sendButton:hover {
             background-color: #4583a0;
         }
-        .clickable {
-            cursor: pointer;
+
+        #zoomButton {
+            background-color: #14d4d7;
+            color: white;
         }
+
+        #zoomButton:hover {
+            background-color: #4583a0;
+        }
+
+        /* Other chat styling */
+        #chatLog { 
+            max-height: 200px; 
+            overflow-y: auto; 
+            margin-bottom: 10px; 
+        }
+        .chatMessage { margin: 5px 0; }
+        .userMessage { color: #ffffff; font-size: 18px; }
+        .botMessage { color: #00f2ff; font-size: 18px; }
+        #chatInput { width: 94.5%; padding: 10px; font-size: 18px; background: #333; color: white; border: none; border-radius: 5px; }
 
         /* Media Queries for smaller devices */
-        @media (max-width: 768px) {
-            #chatBox {
-                width: 90%; /* Make the chat box smaller on smaller screens */
-                padding: 15px;
-            }
-
-            #chatInput, #sendButton {
-                font-size: 14px; /* Adjust font size for better fit */
-            }
-
-            #chatLog {
-                max-height: 150px; /* Adjust max height for chat log */
-            }
+        @media (max-width: 768px) { 
+            #chatBox { width: 90%; padding: 15px; } 
+            #chatInput, #sendButton, #zoomButton { font-size: 16px; }
+            #chatLog { max-height: 150px; } 
         }
-
-        @media (max-width: 480px) {
-            #chatBox {
-                width: 100%; /* Full width on very small screens */
-                padding: 10px;
-            }
-
-            #chatInput, #sendButton {
-                font-size: 12px; /* Further reduce font size */
-            }
-
-            #chatLog {
-                max-height: 120px; /* Adjust max height for smaller screens */
-            }
+        @media (max-width: 480px) { 
+            #chatBox { width: 100%; padding: 10px; } 
+            #chatInput, #sendButton, #zoomButton { font-size: 14px; }
+            #chatLog { max-height: 120px; } 
         }
     </style>
 </head>
 <body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
+    <!-- Chat Interface -->
     <div id="chatBox">
         <div id="chatLog"></div>
         <input type="text" id="chatInput" placeholder="Ask me anything..." />
-        <button id="sendButton">Send</button>
+        <div id="buttonContainer">
+            <button id="sendButton">Send</button>
+            <button id="zoomButton" class="clickable">Full Screen</button>
+        </div>
     </div>
 
     <script>
+        // Zoom button functionality
+        const chatBox = document.getElementById('chatBox');
+        const zoomButton = document.getElementById('zoomButton');
+
+        zoomButton.addEventListener('click', toggleFullScreen);
+
+        function toggleFullScreen() {
+            if (chatBox.classList.contains('fullScreen')) {
+                chatBox.classList.remove('fullScreen');
+                zoomButton.textContent = 'Full Screen'; // Change button text
+            } else {
+                chatBox.classList.add('fullScreen');
+                zoomButton.textContent = 'Exit Full Screen'; // Change button text
+            }
+        }
         let scene, camera, renderer, icosahedron, particlesMesh, ring, mouseX = 0, mouseY = 0;
         let isSceneOne = true;
         let lastCameraZ = 5;
