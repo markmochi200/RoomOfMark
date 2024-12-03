@@ -560,8 +560,8 @@
                 chatLog.scrollTop = chatLog.scrollHeight; // Scroll to bottom while typing
                 i++;
 
-                // Random delay between 0-20ms
-                const randomDelay = Math.floor(Math.random() * (20)) + 1;
+                // Random delay between 0-10ms
+                const randomDelay = Math.floor(Math.random() * (5));
                 await new Promise(resolve => setTimeout(resolve, randomDelay)); // Random delay between characters
             }
 
