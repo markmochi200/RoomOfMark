@@ -516,49 +516,37 @@
         }
         
         document.addEventListener('DOMContentLoaded', () => {
-            // 在用户点击页面时触发权限请求
+
             document.addEventListener('click', async () => {
-                // 如果权限已经请求过了，就不再请求
+
                 if (permissionRequested) return;
 
                 if (isMobile && typeof DeviceOrientationEvent.requestPermission === 'function') {
                     try {
-                        // 请求权限
                         const permission = await DeviceOrientationEvent.requestPermission();
-
                         if (permission === 'granted') {
                             console.log('Permission granted for Device Orientation');
                             alert('You can start rotating your phone now')
-                            // 权限成功后开始监听 deviceorientation
+
                             window.addEventListener('deviceorientation', handleDeviceOrientation);
                         } else {
                             console.log('Permission denied for Device Orientation');
                             alert('You need to grant permission for device orientation to work');
                         }
-
-                        // 设置标志，表示权限请求已完成
                         permissionRequested = true;
                     } catch (err) {
-                        // 捕获错误并输出到控制台
                         console.error('Permission request failed', err);
-
-                        // 提示用户发生了什么错误
                         alert('Failed to request permission for device orientation. Error: ' + (err.message || err));
                     }
                 }
-
                 if (isMobile && !permissionRequested) {
                     try {
                         console.log('Permission granted for Device Orientation');
                         alert('You can start rotating your phone now')
-                        // 权限成功后开始监听 deviceorientation
                         window.addEventListener('deviceorientation', handleDeviceOrientation);
                         permissionRequested = true;
                     } catch (err) {
-                        // 捕获错误并输出到控制台
                         console.error('Permission request failed', err);
-
-                        // 提示用户发生了什么错误
                         alert('Failed to request permission for device orientation. Error: ' + (err.message || err));
                     }
                 }
