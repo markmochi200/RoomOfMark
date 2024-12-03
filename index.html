@@ -215,7 +215,9 @@
             camera.position.z = lastCameraZ;
 
             if (!renderer) {
-                renderer = new THREE.WebGLRenderer();
+                renderer = new THREE.WebGLRenderer({ antialias: true });
+                renderer.setPixelRatio(window.devicePixelRatio);
+                renderer.precision = 'highp';
                 renderer.setSize(window.innerWidth, window.innerHeight);
                 document.body.appendChild(renderer.domElement);
             }
@@ -561,7 +563,7 @@
                 i++;
 
                 // Random delay between 0-10ms
-                const randomDelay = Math.floor(Math.random() * (5));
+                const randomDelay = Math.floor(Math.random() * (10));
                 await new Promise(resolve => setTimeout(resolve, randomDelay)); // Random delay between characters
             }
 
