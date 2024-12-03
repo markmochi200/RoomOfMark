@@ -75,6 +75,15 @@
             cursor: pointer;
         }
 
+        /* Make buttons smaller and fit in one line */
+        #chatBox.fullScreen #sendButton, #zoomButton {
+            width: 48%; /* Make buttons take up less width so they fit on the same line */
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+        }
+
         #sendButton {
             background-color: #60b8d8;
             color: white;
@@ -82,6 +91,12 @@
 
         #sendButton:hover {
             background-color: #4583a0;
+        }
+
+        /* Disabled button styling */
+        #sendButton:disabled {
+            background-color: #cccccc;  /* Lighter/darker gray for disabled state */
+            cursor: not-allowed;        /* Change cursor to show that the button is not clickable */
         }
 
         #zoomButton {
@@ -417,11 +432,16 @@
         document.getElementById('sendButton').addEventListener('click', sendMessage);
         let conversationHistory = []; // Array to store chat history
 
-        // Allow Shift + Enter to insert newlines in input
         document.getElementById('chatInput').addEventListener('keydown', function(event) {
+            const sendButton = document.getElementById('sendButton');
             const input = document.getElementById('chatInput');
-            // If only Enter is pressed, send the message
+
+            // If Enter is pressed and the Send button is disabled, prevent message send
             if (event.key === 'Enter' && !event.shiftKey) {
+                if (sendButton.disabled) {
+                    event.preventDefault(); // Prevent sending the message
+                    return;
+                }
                 event.preventDefault(); // Prevent the default Enter behavior (which is to add a newline)
                 sendMessage();
             }
@@ -430,9 +450,11 @@
         async function sendMessage() {
             const input = document.getElementById('chatInput');
             const chatLog = document.getElementById('chatLog');
+            const sendButton = document.getElementById('sendButton')
             const userMessage = input.value.trim();
 
             if (userMessage) {
+                sendButton.disabled = true;
                 // Display user message
                 const messageElement = document.createElement('div');
                 messageElement.classList.add('chatMessage', 'userMessage');
@@ -472,7 +494,7 @@
                         chatLog.appendChild(botResponse);
 
                         // Add bot response to the conversation history
-                        conversationHistory.push({ role: 'assistant', content: 'Mark: I need a moment to chill out! Too many requests all around the world are acoming through right now! Please try again later...' });
+                        conversationHistory.push({ role: 'assistant', content: 'I need a moment to chill out! Too many requests all around the world are acoming through right now! Please try again later...' });
 
                         chatLog.scrollTop = chatLog.scrollHeight; // Scroll to the bottom
                     }
@@ -484,9 +506,11 @@
                     chatLog.appendChild(botResponse);
 
                     // Add bot response to the conversation history
-                    conversationHistory.push({ role: 'assistant', content: 'Mark: I need a moment to chill out! Too many requests all around the world are acoming through right now! Please try again later...' });
+                    conversationHistory.push({ role: 'assistant', content: 'I need a moment to chill out! Too many requests all around the world are acoming through right now! Please try again later...' });
 
                     chatLog.scrollTop = chatLog.scrollHeight; // Scroll to the bottom
+                } finally {
+                    sendButton.disabled = false;
                 }
             }
         }
