@@ -450,12 +450,12 @@
         async function sendMessage() {
             const input = document.getElementById('chatInput');
             const chatLog = document.getElementById('chatLog');
-            const sendButton = document.getElementById('sendButton')
+            const sendButton = document.getElementById('sendButton');
             const userMessage = input.value.trim();
 
             if (userMessage) {
                 sendButton.disabled = true;
-                // Display user message
+                // Display user message immediately
                 const messageElement = document.createElement('div');
                 messageElement.classList.add('chatMessage', 'userMessage');
                 messageElement.innerHTML = 'You: ' + userMessage.replace(/\n/g, '<br/>'); // Preserve text formatting
@@ -465,6 +465,33 @@
                 // Add user message to the conversation history
                 conversationHistory.push({ role: 'user', content: userMessage });
                 chatLog.scrollTop = chatLog.scrollHeight; // Scroll to the bottom
+
+                // Show the typing animation after 200ms delay if the response isn't ready yet
+                let typingTimeout;
+                let typingAnimationInterval;
+                let botMessageElement;
+                const typingAnimationPromise = new Promise((resolve) => {
+                    const randomDelayAnimation = Math.floor(Math.random() * (600 - 300 + 1)) + 300;
+                    typingTimeout = setTimeout(() => {
+                        // Display "Mark: Typing..." if the response is not processed within 200ms
+                        botMessageElement = document.createElement('div');
+                        botMessageElement.classList.add('chatMessage', 'botMessage');
+                        botMessageElement.innerHTML = 'Mark: Typing.';
+                        chatLog.appendChild(botMessageElement);
+                        chatLog.scrollTop = chatLog.scrollHeight; // Scroll to the bottom
+
+                        // Start the dot animation loop
+                        let dotCount = 0;
+                        typingAnimationInterval = setInterval(() => {
+                            dotCount = (dotCount + 1) % 4; // Loop through 0, 1, 2, 3
+                            botMessageElement.innerHTML = 'Mark: Typing' + '.'.repeat(dotCount);
+                        }, 500); // Update every 500ms
+
+                        // Store the interval and resolve the promise to indicate typing animation started
+                        botMessageElement.dotInterval = typingAnimationInterval;
+                        resolve(botMessageElement);
+                    }, randomDelayAnimation); // Wait 300-600ms before showing typing animation
+                });
 
                 // Send the chat history to the backend API
                 try {
@@ -476,45 +503,72 @@
 
                     if (response.ok) {
                         const data = await response.json();
-                        
-                        // Display the bot's response
-                        const botResponse = document.createElement('div');
-                        botResponse.classList.add('chatMessage', 'botMessage');
-                        botResponse.innerHTML = 'Mark: ' + data.reply.replace(/\n/g, '<br/>'); // Replace newlines with <br>
-                        chatLog.appendChild(botResponse);
+                        // If response is ready before 200ms, cancel the typing animation timeout
+                        clearTimeout(typingTimeout); // Cancel typing animation timeout
+                        clearInterval(typingAnimationInterval); // Clear the interval for typing animation
+                        const botMessageElement = await typingAnimationPromise; // Wait for typing animation if it was triggered
+
+                        // Remove the "Typing..." and start displaying the real response
+                        botMessageElement.innerHTML = 'Mark: '; // Remove "Typing..."
+                        await typeBotResponse(data.reply, botMessageElement); // Pass the same element to continue
 
                         // Add bot response to the conversation history
                         conversationHistory.push({ role: 'assistant', content: data.reply });
 
                         chatLog.scrollTop = chatLog.scrollHeight; // Scroll to the bottom
                     } else {
-                        const botResponse = document.createElement('div');
-                        botResponse.classList.add('chatMessage', 'botMessage');
-                        botResponse.textContent = 'Mark: I need a moment to chill out! Too many requests all around the world are acoming through right now! Please try again later...';
-                        chatLog.appendChild(botResponse);
+                        // Handle failed response (e.g., too many requests)
+                        clearTimeout(typingTimeout); // Cancel typing animation timeout
+                        clearInterval(typingAnimationInterval); // Clear the interval for typing animation
+                        const botMessageElement = await typingAnimationPromise; // Wait for typing animation if it was triggered
 
-                        // Add bot response to the conversation history
-                        conversationHistory.push({ role: 'assistant', content: 'I need a moment to chill out! Too many requests all around the world are acoming through right now! Please try again later...' });
+                        // Add the fallback message to the history and clear the animation
+                        botMessageElement.innerHTML = 'Mark: ';
+                        const errorMessage = 'I need a moment to chill out! Too many requests are coming through right now. Please try again later...';
+                        await typeBotResponse(errorMessage, botMessageElement); // Pass the same element to continue
 
+                        // Add the error response to the conversation history
+                        conversationHistory.push({ role: 'assistant', content: errorMessage });
                         chatLog.scrollTop = chatLog.scrollHeight; // Scroll to the bottom
                     }
                 } catch (error) {
                     console.error(error);
-                    const botResponse = document.createElement('div');
-                    botResponse.classList.add('chatMessage', 'botMessage');
-                    botResponse.textContent = `Mark: I need a moment to chill out! Too many requests all around the world are coming through right now! Please try again later...`;
-                    chatLog.appendChild(botResponse);
+                    // Handle error, such as network failure
+                    clearTimeout(typingTimeout); // Cancel typing animation timeout
+                    clearInterval(typingAnimationInterval); // Clear the interval for typing animation
+                    const botMessageElement = await typingAnimationPromise; // Wait for typing animation if it was triggered
 
-                    // Add bot response to the conversation history
-                    conversationHistory.push({ role: 'assistant', content: 'I need a moment to chill out! Too many requests all around the world are acoming through right now! Please try again later...' });
+                    // Add the fallback message to the history and clear the animation
+                    botMessageElement.innerHTML = 'Mark: ';
+                    const errorMessage = 'I need a moment to chill out! Too many requests are coming through right now. Please try again later...';
+                    await typeBotResponse(errorMessage, botMessageElement); // Pass the same element to continue
 
+                    // Add the error response to the conversation history
+                    conversationHistory.push({ role: 'assistant', content: errorMessage });
                     chatLog.scrollTop = chatLog.scrollHeight; // Scroll to the bottom
                 } finally {
                     sendButton.disabled = false;
                 }
             }
         }
-        
+
+        // Function to simulate typing out the bot's response progressively
+        async function typeBotResponse(response, botMessageElement) {
+            let i = 0;
+            while (i < response.length) {
+                botMessageElement.innerHTML = 'Mark: ' + response.substring(0, i + 1);
+                chatLog.scrollTop = chatLog.scrollHeight; // Scroll to bottom while typing
+                i++;
+
+                // Random delay between 0-20ms
+                const randomDelay = Math.floor(Math.random() * (20)) + 1;
+                await new Promise(resolve => setTimeout(resolve, randomDelay)); // Random delay between characters
+            }
+
+            // Add the full response to the conversation history
+            conversationHistory.push({ role: 'assistant', content: response });
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
 
             document.addEventListener('click', async () => {
