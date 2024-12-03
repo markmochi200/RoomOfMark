@@ -516,7 +516,6 @@
 
                         // Add bot response to the conversation history
                         conversationHistory.push({ role: 'assistant', content: data.reply });
-
                         chatLog.scrollTop = chatLog.scrollHeight; // Scroll to the bottom
                     } else {
                         // Handle failed response (e.g., too many requests)
@@ -568,7 +567,7 @@
             }
 
             // Add the full response to the conversation history
-            conversationHistory.push({ role: 'assistant', content: response });
+            // conversationHistory.push({ role: 'assistant', content: response });
         }
 
         document.addEventListener('DOMContentLoaded', () => {
