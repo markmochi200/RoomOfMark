@@ -45,13 +45,14 @@
 
         /* Adjust input field size when in full-screen mode */
         #chatBox.fullScreen #chatInput {
-            width: 97.25%;        /* Take full width of the screen */
+            width: 100%;        /* Take full width of the screen */
             padding: 15px;      /* Increase padding for better usability */
             font-size: 18px;    /* Increase font size for readability */
             margin-top: 20px;   /* Add margin for spacing */
             min-height: 10%;
         }
 
+        /* Make chat log occupy available space in full screen */
         #chatBox.fullScreen #chatLog { 
             max-height: 90%; 
             overflow-y: auto; 
@@ -63,25 +64,28 @@
             display: flex;
             justify-content: space-between;
             margin-top: 10px;
+            width: 100%; /* Ensure the button container takes up the full width */
         }
 
-        /* Make buttons smaller and fit in one line */
-        #sendButton, #zoomButton {
+        /* Make buttons have equal width */
+        #zoomButton, #sendButton {
             width: 48%; /* Make buttons take up less width so they fit on the same line */
             padding: 10px;
             font-size: 16px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            box-sizing: border-box;  /* Include padding in width calculation */
         }
 
-        /* Make buttons smaller and fit in one line */
-        #chatBox.fullScreen #sendButton, #zoomButton {
-            width: 48%; /* Make buttons take up less width so they fit on the same line */
+        /* Full width buttons in full-screen mode */
+        #chatBox.fullScreen #zoomButton, #chatBox.fullScreen #sendButton {
+            width: 48%; /* Same width for both buttons */
             padding: 10px;
             font-size: 16px;
             border: none;
             border-radius: 5px;
+            box-sizing: border-box;
         }
 
         #sendButton {
@@ -118,14 +122,16 @@
         .userMessage { color: #ffffff; font-size: 18px; }
         .botMessage { color: #60b8d8; font-size: 18px; }
         #chatInput { 
+            font-family: Arial, sans-serif;
             resize: none; /* Disable resizing */ 
-            width: 94.5%; 
+            width: 100%; /* Ensure it takes full width */
             padding: 10px; 
             font-size: 18px; 
             background: #333; 
             color: white; 
             border: none; 
             border-radius: 5px;
+            box-sizing: border-box; /* Include padding in width calculation */
         }
 
         /* Media Queries for smaller devices */
@@ -136,11 +142,11 @@
             }
 
             #chatBox.fullScreen #chatInput {
-                width: 90%;  /* Limit width on smaller screens to avoid overflow */
+                width: 100%;  /* Take full width of the screen */
             }
 
             #chatInput {
-                width: 94%;  /* Even smaller width for mobile screens */
+                width: 100%;  /* Ensure input is fully responsive on smaller screens */
             }
             
             #chatLog { 
@@ -155,11 +161,11 @@
             }
 
             #chatBox.fullScreen #chatInput {
-                width: 90%;  /* Even smaller width for mobile screens */
+                width: 100%;  /* Ensure input is fully responsive on small screens */
             }
 
             #chatInput {
-                width: 94%;  /* Even smaller width for mobile screens */
+                width: 100%;  /* Even smaller width for mobile screens */
             }
 
             #chatLog { 
@@ -176,8 +182,8 @@
         <div id="chatLog"></div>
         <textarea id="chatInput" placeholder="Ask me anything..."></textarea>
         <div id="buttonContainer">
-            <button id="sendButton">Send</button>
             <button id="zoomButton" class="clickable">Full Screen</button>
+            <button id="sendButton">Send</button>
         </div>
     </div>
 
@@ -512,11 +518,10 @@
 
                         // Remove the "Typing..." and start displaying the real response
                         botMessageElement.innerHTML = 'Mark: '; // Remove "Typing..."
-                        await typeBotResponse(data.reply, botMessageElement); // Pass the same element to continue
+                        await typeBotResponse(data.reply.replace(/\n/g, '<br/>'), botMessageElement); // Pass the same element to continue
 
                         // Add bot response to the conversation history
                         conversationHistory.push({ role: 'assistant', content: data.reply });
-
                         chatLog.scrollTop = chatLog.scrollHeight; // Scroll to the bottom
                     } else {
                         // Handle failed response (e.g., too many requests)
@@ -566,9 +571,6 @@
                 const randomDelay = Math.floor(Math.random() * (10));
                 await new Promise(resolve => setTimeout(resolve, randomDelay)); // Random delay between characters
             }
-
-            // Add the full response to the conversation history
-            conversationHistory.push({ role: 'assistant', content: response });
         }
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -608,7 +610,6 @@
                 }
             });
         });
-
 
         // The actual device orientation handler
         function handleDeviceOrientation(event) {
