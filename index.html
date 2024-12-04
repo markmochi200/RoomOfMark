@@ -119,8 +119,8 @@
             margin-bottom: 10px; 
         }
         .chatMessage { margin: 5px 0; }
-        .userMessage { color: #ffffff; font-size: 18px; }
-        .botMessage { color: #60b8d8; font-size: 18px; }
+        .userMessage { color: #60b8d8; font-size: 18px; }
+        .botMessage { color: #ffffff; font-size: 18px; }
         #chatInput { 
             font-family: Arial, sans-serif;
             resize: none; /* Disable resizing */ 
@@ -176,7 +176,7 @@
 </head>
 <body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
     <!-- Chat Interface -->
     <div id="chatBox">
         <div id="chatLog"></div>
@@ -559,17 +559,20 @@
             }
         }
 
-        // Function to simulate typing out the bot's response progressively
+        // Function to process and display Markdown
         async function typeBotResponse(response, botMessageElement) {
             let i = 0;
+            const chatLog = document.getElementById('chatLog');
+
             while (i < response.length) {
-                botMessageElement.innerHTML = 'Mark: ' + response.substring(0, i + 1);
-                chatLog.scrollTop = chatLog.scrollHeight; // Scroll to bottom while typing
+                const partialResponse = response.substring(0, i + 1);
+                const formattedResponse = marked.parse(partialResponse); // Convert to HTML using marked.js
+                botMessageElement.innerHTML = 'Mark: ' + formattedResponse;
+                chatLog.scrollTop = chatLog.scrollHeight; // Scroll to bottom
                 i++;
 
-                // Random delay between 0-10ms
-                const randomDelay = Math.floor(Math.random() * (10));
-                await new Promise(resolve => setTimeout(resolve, randomDelay)); // Random delay between characters
+                const randomDelay = Math.floor(Math.random() * 7);
+                await new Promise(resolve => setTimeout(resolve, randomDelay));
             }
         }
 
