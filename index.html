@@ -484,7 +484,7 @@
                         // Display "Mark: Typing..." if the response is not processed within 200ms
                         botMessageElement = document.createElement('div');
                         botMessageElement.classList.add('chatMessage', 'botMessage');
-                        botMessageElement.innerHTML = 'Mark: Typing.';
+                        botMessageElement.innerHTML = 'Mark: Thinking.';
                         chatLog.appendChild(botMessageElement);
                         chatLog.scrollTop = chatLog.scrollHeight; // Scroll to the bottom
 
@@ -492,7 +492,7 @@
                         let dotCount = 0;
                         typingAnimationInterval = setInterval(() => {
                             dotCount = (dotCount + 1) % 4; // Loop through 0, 1, 2, 3
-                            botMessageElement.innerHTML = 'Mark: Typing' + '.'.repeat(dotCount);
+                            botMessageElement.innerHTML = 'Mark: Thinking' + '.'.repeat(dotCount);
                         }, 500); // Update every 500ms
 
                         // Store the interval and resolve the promise to indicate typing animation started
