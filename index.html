@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Room of Mark</title>
+    <title>Door of Sherry</title>
     <style>
         /* Basic styles */
         body { margin: 0; font-family: Arial, sans-serif; overflow: hidden; }
@@ -484,7 +484,7 @@
                         // Display "Mark: Typing..." if the response is not processed within 200ms
                         botMessageElement = document.createElement('div');
                         botMessageElement.classList.add('chatMessage', 'botMessage');
-                        botMessageElement.innerHTML = 'Mark: Thinking.';
+                        botMessageElement.innerHTML = 'Sherry: Thinking.';
                         chatLog.appendChild(botMessageElement);
                         chatLog.scrollTop = chatLog.scrollHeight; // Scroll to the bottom
 
@@ -492,7 +492,7 @@
                         let dotCount = 0;
                         typingAnimationInterval = setInterval(() => {
                             dotCount = (dotCount + 1) % 4; // Loop through 0, 1, 2, 3
-                            botMessageElement.innerHTML = 'Mark: Thinking' + '.'.repeat(dotCount);
+                            botMessageElement.innerHTML = 'Sherry: Thinking' + '.'.repeat(dotCount);
                         }, 500); // Update every 500ms
 
                         // Store the interval and resolve the promise to indicate typing animation started
@@ -517,7 +517,7 @@
                         const botMessageElement = await typingAnimationPromise; // Wait for typing animation if it was triggered
 
                         // Remove the "Typing..." and start displaying the real response
-                        botMessageElement.innerHTML = 'Mark: '; // Remove "Typing..."
+                        botMessageElement.innerHTML = 'Sherry: '; // Remove "Typing..."
                         await typeBotResponse(data.reply.replace(/\n/g, '<br/>'), botMessageElement); // Pass the same element to continue
 
                         // Add bot response to the conversation history
@@ -530,7 +530,7 @@
                         const botMessageElement = await typingAnimationPromise; // Wait for typing animation if it was triggered
 
                         // Add the fallback message to the history and clear the animation
-                        botMessageElement.innerHTML = 'Mark: ';
+                        botMessageElement.innerHTML = 'Sherry: ';
                         const errorMessage = 'I need a moment to chill out! Too many requests are coming through right now. Please try again later...';
                         await typeBotResponse(errorMessage, botMessageElement); // Pass the same element to continue
 
@@ -546,7 +546,7 @@
                     const botMessageElement = await typingAnimationPromise; // Wait for typing animation if it was triggered
 
                     // Add the fallback message to the history and clear the animation
-                    botMessageElement.innerHTML = 'Mark: ';
+                    botMessageElement.innerHTML = 'Sherry: ';
                     const errorMessage = 'I need a moment to chill out! Too many requests are coming through right now. Please try again later...';
                     await typeBotResponse(errorMessage, botMessageElement); // Pass the same element to continue
 
@@ -567,7 +567,7 @@
             while (i < response.length) {
                 const partialResponse = response.substring(0, i + 1);
                 const formattedResponse = marked.parse(partialResponse); // Convert to HTML using marked.js
-                botMessageElement.innerHTML = 'Mark: ' + formattedResponse;
+                botMessageElement.innerHTML = 'Sherry: ' + formattedResponse;
                 chatLog.scrollTop = chatLog.scrollHeight; // Scroll to bottom
                 i++;
 
