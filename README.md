@@ -44,4 +44,4 @@ MarkGPT is open-source software licensed under the [MIT License](LICENSE). See t
 ## Contact
 
 For questions or feedback, feel free to reach out via email:
-📧 [markmochi200@gmail.com](mailto:markmochi200@gmail.com)
+📧 [junfanxiang@gmail.com](mailto:junfanxiang@gmail.com)
